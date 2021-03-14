@@ -1,1 +1,2 @@
-# Jaist-s-subtheme-prime-factorization
+# subtheme
+# prime factrization
