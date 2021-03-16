@@ -3,13 +3,22 @@
 
 #define target 2*2*2*3*3*3*5*5*5
 
+__device__ void kernel2(int *A){
+	int i = blockIdx.x * blockDim.x + threadIdx.x;
+	int x;
+	if(i <= __sqrt(*A)){
+		x = __sqrt(*A) + i;
+	}
+}
+
 __global__ void kernel(int *A)
 {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	float w;
-	if(i <= *A){
-		while(w != 0) {
-                    printf("%d ",i);
+	if(i <= __sqrt(*A)){
+		for(j = 2; j <= __sqrt(*A); j++) {
+			kernel2(*A);
+            printf("%d ",i);
         }
 	}
 }
