@@ -3,26 +3,27 @@
 
 #define target 2*2*2*3*3*3*5*5*5
 
-__device__ int GCD(int a, int b)
+__device__ int GCD(int *a, int *b)
 {
 	int c;	
 	if(a == 0){
-		return b;
-	} else if(a> b){
+		return *b;
+	} else if(a > b){
 		return GCD(b, a);
 	}else{
-		c = b % a;
-		return GCD(c, a);
+		c = *b % *a;
+		return GCD(&c, a);
 	}
 }
 
-__global__ void kernel(int A)
+__global__ void kernel(int *A)
 {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	int j = blockIdx.y * blockDim.y + threadIdx.y;
+	int a = i - j;
 	if(i >= 1 && j >= 1 && i > j){
-		if((i+__sqrt(A))^2 % A == (j + __sqrt(A))^2 % A){
-			printf("%d ", GCD(i - j, A));
+		if((i + *A)^2 % *A == (j + *A)^2 % *A){
+			printf("%d ", GCD(&a, A));
 		}
 	}
 }
