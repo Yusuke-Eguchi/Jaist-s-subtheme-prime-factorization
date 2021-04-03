@@ -19,16 +19,16 @@ __global__ void kernel(int *A)
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	int j = blockIdx.y * blockDim.y + threadIdx.y;
 	int k;
-	int a = i - j, b, flag;
+	int a = i - j, b, flag = 0;
 	if(i >= 1 && j >= 1 && a > 1 && i < *A && j < *A){
 		if(i^2 % *A == j^2 % *A){
 			b = GCD(&a, A);
-			for(k=2;sqrtf(b)>=k;k++){
+			for(k=2;b>k;k++){
 				if(b % k == 0){
 					flag = 1;
 				}
 			}
-			if(flag == 0){
+			if(flag == 0 && b != 1){
 				printf("%d ", b);
 			}
 		}
