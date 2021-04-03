@@ -20,7 +20,7 @@ __global__ void kernel(int *A)
 	int j = blockIdx.y * blockDim.y + threadIdx.y;
 	int k;
 	int a = i - j, b, flag = 0;
-	if(i >= 1 && j >= 1 && a > 1 && i < *A && j < *A){
+	if(i >= __powf(*A,0.5) && j >= __powf(*A,0.5) && a > 1 && i < *A && j < *A){
 		if(i^2 % *A == j^2 % *A){
 			b = GCD(&a, A);
 			for(k=2;b>k;k++){
