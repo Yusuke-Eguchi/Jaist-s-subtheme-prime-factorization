@@ -21,8 +21,8 @@ __global__ void kernel(int *A)
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	int j = blockIdx.y * blockDim.y + threadIdx.y;
 	int a = i - j;
-	if(i >= 1 && j >= 1 && i > j){
-		if((i + *A)^2 % *A == (j + *A)^2 % *A){
+	if(i >= 1 && j >= 1 && a > 1){
+		if(i^2 % *A == j^2 % *A){
 			printf("%d ", GCD(&a, A));
 		}
 	}
@@ -33,7 +33,7 @@ int main(){
     cudaMalloc((void**)&d_target,sizeof(int));
 	cudaMemcpy(d_target,&A,sizeof(int),cudaMemcpyHostToDevice);
 	dim3 block(32,32);
-	dim3 grid((A+31)/32, (A+31)/32);
+	dim3 grid((A+31)/32,(A+31)/32);
 	kernel<<<grid,block>>>(d_target);
 	cudaFree(d_target);
 	printf("\n");
