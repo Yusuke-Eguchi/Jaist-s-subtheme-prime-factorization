@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#define target 2*2*2*3*3*3*5*5*5
+#define target 2*3*5
 
 __device__ int GCD(int *a, int *b)
 {
@@ -20,7 +20,7 @@ __global__ void kernel(int *A)
 	int j = blockIdx.y * blockDim.y + threadIdx.y;
 	int k;
 	int a = i - j, b, flag = 0;
-	if(i >= __powf(*A,0.5) && j >= __powf(*A,0.5) && a > 1 && i < *A && j < *A){
+	if(i >= __powf(*A,0.5) + 1 && j >= __powf(*A,0.5) + 1 && a > 1 && i < *A && j < *A){
 		if(i^2 % *A == j^2 % *A){
 			b = GCD(&a, A);
 			for(k=2;b>k;k++){
