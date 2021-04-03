@@ -5,12 +5,10 @@
 
 __device__ int GCD(int *a, int *b)
 {
-	int c;	
-	if(a == 0){
+	int c;
+	if(*a == 0){
 		return *b;
-	} else if(a > b){
-		return GCD(b, a);
-	}else{
+	} else {
 		c = *b % *a;
 		return GCD(&c, a);
 	}
@@ -20,10 +18,19 @@ __global__ void kernel(int *A)
 {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	int j = blockIdx.y * blockDim.y + threadIdx.y;
-	int a = i - j;
-	if(i >= 1 && j >= 1 && a > 1){
+	int k;
+	int a = i - j, b, flag;
+	if(i >= 1 && j >= 1 && a > 1 && i < *A && j < *A){
 		if(i^2 % *A == j^2 % *A){
-			printf("%d ", GCD(&a, A));
+			b = GCD(&a, A);
+			for(k=2;sqrtf(b)>=k;k++){
+				if(b % k == 0){
+					flag = 1;
+				}
+			}
+			if(flag == 0){
+				printf("%d ", b);
+			}
 		}
 	}
 }
