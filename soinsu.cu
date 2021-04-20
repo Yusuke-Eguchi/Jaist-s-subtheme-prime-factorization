@@ -21,13 +21,23 @@ __global__ void kernel(int *A)
 }
 
 int main(){
+	cudaEvent_t start, stop;
+	cudaEventCreate(&start);
+	cudaEventCreate(&stop);
     int *d_target, A = target;
     cudaMalloc((void**)&d_target,sizeof(int));
 	cudaMemcpy(d_target,&A,sizeof(int),cudaMemcpyHostToDevice);
 	dim3 block(1024);
 	dim3 grid((A+1023)/1024);
+	cudaEventRecord(start);
 	kernel<<<grid,block>>>(d_target);
+	cudaEventRecord(stop);
+	cudaEventSynchronize(stop);
+	float milliseconds = 0;
+	cudaEventElapsedTime(&milliseconds, start, stop);
+	cudaEventDestroy(start);
+	cudaEventDestroy(stop);
 	cudaFree(d_target);
-	printf("\n");
+	printf("%10.10f\n", milliseconds);
 return 0;
 }

@@ -37,6 +37,9 @@ __global__ void kernel(int *A, int *d_B, int *d_count)
 }
 
 int main(){
+	cudaEvent_t start, stop;
+	cudaEventCreate(&start);
+	cudaEventCreate(&stop);
     int *d_target, A = target, count = 0, *d_count;
 	int *d_B;
 	int B[target];
@@ -52,7 +55,14 @@ int main(){
 	cudaMemcpy(d_count,&count,sizeof(int),cudaMemcpyHostToDevice);
 	dim3 block(32,32);
 	dim3 grid((A+31)/32,(A+31)/32);
+	cudaEventRecord(start);
 	kernel<<<grid,block>>>(d_target,d_B,d_count);
+	cudaEventRecord(stop);
+	cudaEventSynchronize(stop);
+	float milliseconds = 0;
+	cudaEventElapsedTime(&milliseconds, start, stop);
+	cudaEventDestroy(start);
+	cudaEventDestroy(stop);
 	cudaMemcpy(&B,d_B,sizeof(int)*A,cudaMemcpyDeviceToHost);
 	cudaMemcpy(&count,d_count,sizeof(int),cudaMemcpyDeviceToHost);
 	cudaFree(d_target);
@@ -71,5 +81,6 @@ int main(){
 		}
 	}
 	printf("\n");
+	printf("%10.10f\n", milliseconds);
 return 0;
 }
