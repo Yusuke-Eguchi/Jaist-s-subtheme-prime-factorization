@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#define target 2*2*2*3*3*3*5*5*5
+#define target 2*2*2*3*3*3*5*5
 
 __global__ void kernel(int *A)
 {
