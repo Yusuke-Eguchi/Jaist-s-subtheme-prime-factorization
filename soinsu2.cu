@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#define target 2*2*2*3*5
+#define target 2*3*5*11
 
 __device__ int GCD(int *a, int *b)
 {
@@ -29,12 +29,8 @@ __global__ void kernel(int *A, int *d_B, int *d_count)
 				}
 			}
 			if(flag == 0 && b != 1){
-<<<<<<< HEAD
-				d_B[i*j+j] = b;
-=======
 				d_B[*d_count] = b;
-				*d_count += 1;
->>>>>>> bbb20f995c54ae605b87c61747dc04fed346e167
+				*d_count = *d_count + 1;
 			}
 		}
 	}
@@ -43,13 +39,11 @@ __global__ void kernel(int *A, int *d_B, int *d_count)
 int main(){
     int *d_target, A = target, count = 0, *d_count;
 	int *d_B;
-	int *B;
-	B = (int *)malloc(sizeof(int) * target);
+	int B[target];
 	int i, j;
 	for(i=0;i<target;i++){
 		B[i] = 0;
 	}
-	printf("0\n");
     cudaMalloc((void**)&d_target,sizeof(int));
 	cudaMalloc((void**)&d_B,sizeof(int)*A);
 	cudaMalloc((void**)&d_count,sizeof(int));
@@ -64,24 +58,8 @@ int main(){
 	cudaFree(d_target);
 	cudaFree(d_B);	
 	cudaFree(d_count);
-<<<<<<< HEAD
-	printf("1\n");
-	for(i=0;i<target;i++){
-=======
-	printf("%d\n", count);
-	for(i=0;i<target;i++){
-		if(B[i] != 0){
->>>>>>> bbb20f995c54ae605b87c61747dc04fed346e167
-			printf("%d ", B[i]);
-	}
-<<<<<<< HEAD
-	printf("\n");
 	for(i=0;i<target;i++){
 		for(j=i+1;j<target;j++){
-=======
-	for(i=0;i<target;i++){
-		for(j=i+1;j<count;j++){
->>>>>>> bbb20f995c54ae605b87c61747dc04fed346e167
 			if(B[i] == B[j]){
 				B[j] = 0;
 			}
