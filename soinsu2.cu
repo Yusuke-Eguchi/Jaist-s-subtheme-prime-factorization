@@ -30,7 +30,7 @@ __global__ void kernel(int *A, int *d_B, int *d_count)
 			}
 			if(flag == 0 && b != 1){
 				d_B[*d_count] = b;
-				*d_count++;
+				*d_count += 1;
 			}
 		}
 	}
@@ -41,7 +41,7 @@ int main(){
 	int *d_B;
 	int B[target];
 	int i, j;
-	for(i=0;i<A;i++){
+	for(i=0;i<target;i++){
 		B[i] = 0;
 	}
     cudaMalloc((void**)&d_target,sizeof(int));
@@ -59,19 +59,19 @@ int main(){
 	cudaFree(d_B);	
 	cudaFree(d_count);
 	printf("%d\n", count);
-	for(i=0;i<count;i++){
+	for(i=0;i<target;i++){
 		if(B[i] != 0){
 			printf("%d ", B[i]);
 		}
 	}
-	for(i=0;i<count;i++){
+	for(i=0;i<target;i++){
 		for(j=i+1;j<count;j++){
 			if(B[i] == B[j]){
 				B[j] = 0;
 			}
 		}
 	}
-	for(i=0;i<count;i++){
+	for(i=0;i<target;i++){
 		if(B[i] != 0){
 			printf("%d ", B[i]);
 		}
