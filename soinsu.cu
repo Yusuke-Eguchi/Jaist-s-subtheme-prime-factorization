@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#define target 2*2*2*3*3*3*5*5
+#define target 2*3*5*10000
 
 __global__ void kernel(int *A)
 {
@@ -38,6 +38,7 @@ int main(){
 	cudaEventDestroy(start);
 	cudaEventDestroy(stop);
 	cudaFree(d_target);
+	printf("\n");
 	printf("%10.10f\n", milliseconds);
 return 0;
 }

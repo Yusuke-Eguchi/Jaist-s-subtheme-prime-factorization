@@ -11,7 +11,7 @@ clock_t times_clock()
 }
 
 int main(){
-    int target = 2*2*2*3*3*3*5*5*5;
+    int target = 2*3*5;
     int i, j, flag = 0;
     clock_t t1, t2;
     t1 = times_clock();
