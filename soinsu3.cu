@@ -66,7 +66,7 @@ int main(){
 		B[i] = GCD(B[i], A);
 	}
 	for(i=0;i<SIZE;i++){
-		for(k=2;B[i]>k;k++){
+		for(k=2;sqrtf(B[i])>=k;k++){
 			if(B[i] % k == 0){
 				B[i] = 0;
 			}
@@ -80,7 +80,7 @@ int main(){
 		}
 	}
 	for(i=0;i<SIZE;i++){
-		if(B[i] != 0){
+		if(B[i] != 0 && B[i] != 1){
 			printf("%d ", B[i]);
 		}
 	}
