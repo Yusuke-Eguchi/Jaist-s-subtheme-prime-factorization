@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#define target 2*3*5*10000
+#define target 2*3*5
 #define SIZE 100
 
 __host__ int GCD(int a, int b)
@@ -19,12 +19,12 @@ __global__ void kernel(int *A, int *d_B, int *d_count)
 {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	int j = blockIdx.y * blockDim.y + threadIdx.y;
-	int a = i - j;
+	int a = i - j, b;
 	if(i >= __powf(*A,0.5) + 1 && j >= __powf(*A,0.5) + 1 && a > 1 && i < *A && j < *A){
 		if(i^2 % *A == j^2 % *A){
 			if(*d_count < SIZE){
-				d_B[*d_count] = a;
-				*d_count = *d_count + 1;
+				b = a;
+				b++;
 			}
 		}
 	}
@@ -42,11 +42,7 @@ int main(){
 		B[i] = 0;
 	}
     cudaMalloc((void**)&d_target,sizeof(int));
-	cudaMalloc((void**)&d_B,sizeof(int)*SIZE);
-	cudaMalloc((void**)&d_count,sizeof(int));
 	cudaMemcpy(d_target,&A,sizeof(int),cudaMemcpyHostToDevice);
-	cudaMemcpy(d_B,&B,sizeof(int)*SIZE,cudaMemcpyHostToDevice);
-	cudaMemcpy(d_count,&count,sizeof(int),cudaMemcpyHostToDevice);
 	dim3 block(32,32);
 	dim3 grid((A+31)/32,(A+31)/32);
 	cudaEventRecord(start);
@@ -57,11 +53,7 @@ int main(){
 	cudaEventElapsedTime(&milliseconds, start, stop);
 	cudaEventDestroy(start);
 	cudaEventDestroy(stop);
-	cudaMemcpy(&B,d_B,sizeof(int)*SIZE,cudaMemcpyDeviceToHost);
-	cudaMemcpy(&count,d_count,sizeof(int),cudaMemcpyDeviceToHost);
 	cudaFree(d_target);
-	cudaFree(d_B);	
-	cudaFree(d_count);
 	for(i=0;i<SIZE;i++){
 		B[i] = GCD(B[i], A);
 	}
