@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 
-#define target 2*3*5
+#define target 2*3*5*10000
 #define SIZE 100
 
 __host__ int GCD(int a, int b)
@@ -42,7 +42,11 @@ int main(){
 		B[i] = 0;
 	}
     cudaMalloc((void**)&d_target,sizeof(int));
+	cudaMalloc((void**)&d_B,sizeof(int)*SIZE);
+	cudaMalloc((void**)&d_count,sizeof(int));
 	cudaMemcpy(d_target,&A,sizeof(int),cudaMemcpyHostToDevice);
+	cudaMemcpy(d_B,&B,sizeof(int)*SIZE,cudaMemcpyHostToDevice);
+	cudaMemcpy(d_count,&count,sizeof(int),cudaMemcpyHostToDevice);
 	dim3 block(32,32);
 	dim3 grid((A+31)/32,(A+31)/32);
 	cudaEventRecord(start);
@@ -53,7 +57,11 @@ int main(){
 	cudaEventElapsedTime(&milliseconds, start, stop);
 	cudaEventDestroy(start);
 	cudaEventDestroy(stop);
+	cudaMemcpy(&B,d_B,sizeof(int)*SIZE,cudaMemcpyDeviceToHost);
+	cudaMemcpy(&count,d_count,sizeof(int),cudaMemcpyDeviceToHost);
 	cudaFree(d_target);
+	cudaFree(d_B);	
+	cudaFree(d_count);
 	for(i=0;i<SIZE;i++){
 		B[i] = GCD(B[i], A);
 	}
