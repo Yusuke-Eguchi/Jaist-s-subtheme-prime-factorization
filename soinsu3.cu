@@ -22,7 +22,7 @@ __global__ void kernel(int *A, int *d_B, int *d_count)
 	int a = i - j;
 	if(i >= __powf(*A,0.5) + 1 && j >= __powf(*A,0.5) + 1 && a > 1 && i < *A && j < *A){
 		if(i^2 % *A == j^2 % *A){
-			if(*d_count < SIZE){
+			if(*d_count > SIZE){
 				d_B[*d_count] = a;
 				*d_count = *d_count + 1;
 			}
