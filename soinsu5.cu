@@ -31,8 +31,8 @@ __global__ void kernel(long long *A, int *d_B)
 	int a = i - j;
 	if(i >= __powf(*A,0.5) + 1 && j >= __powf(*A,0.5) + 1 && a > 1 && i < *A && j < *A){
 		if(i^2 % *A == j^2 % *A){
-			if(sizeof(d_B) / sizeof(long long) < SIZE ){
-				d_B[sizeof(d_B) / sizeof(long long)] = a;
+			if(sizeof(d_B) / sizeof(int) < SIZE ){
+				d_B[sizeof(d_B) / sizeof(int)] = a;
 			}
 		}
 	}
@@ -41,19 +41,17 @@ __global__ void kernel(long long *A, int *d_B)
 int main(){
 	clock_t t1, t2;
 	t1 = times_clock();
-    int *d_target；
-	long long A = target;
+    long long *d_target, A = target;
 	int *d_B;
 	int B[SIZE];
 	int i, j, k;
     cudaMalloc((void**)&d_target,sizeof(long long));
 	cudaMalloc((void**)&d_B,sizeof(int)*SIZE);
-	cudaMemcpy(d_target,&A,sizeof(int),cudaMemcpyHostToDevice);
+	cudaMemcpy(d_target,&A,sizeof(long long),cudaMemcpyHostToDevice);
 	cudaMemcpy(d_B,&B,sizeof(int)*SIZE,cudaMemcpyHostToDevice);
 	dim3 block(32,32);
 	dim3 grid((A+31)/32,(A+31)/32);
 	kernel<<<grid,block>>>(d_target,d_B);
-	float milliseconds = 0;
 	cudaMemcpy(&B,d_B,sizeof(int)*SIZE,cudaMemcpyDeviceToHost);
 	cudaFree(d_target);
 	cudaFree(d_B);	

@@ -42,18 +42,18 @@ __global__ void kernel(long long *A, int *d_B, int *d_count)
 int main(){
 	clock_t t1, t2;
     t1 = times_clock();
-    int *d_target, count = 0, *d_count;
-	long long  A = target;
+    int count = 0, *d_count;
+	long long  *d_target, A = target;
 	int *d_B;
 	int B[SIZE];
 	int i, j, k;
 	for(i=0;i<SIZE;i++){
 		B[i] = 0;
 	}
-    cudaMalloc((void**)&d_target,sizeof(int));
+    cudaMalloc((void**)&d_target,sizeof(long long));
 	cudaMalloc((void**)&d_B,sizeof(int)*SIZE);
 	cudaMalloc((void**)&d_count,sizeof(int));
-	cudaMemcpy(d_target,&A,sizeof(int),cudaMemcpyHostToDevice);
+	cudaMemcpy(d_target,&A,sizeof(long long),cudaMemcpyHostToDevice);
 	cudaMemcpy(d_B,&B,sizeof(int)*SIZE,cudaMemcpyHostToDevice);
 	cudaMemcpy(d_count,&count,sizeof(int),cudaMemcpyHostToDevice);
 	dim3 block(32,32);

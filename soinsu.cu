@@ -33,9 +33,8 @@ __global__ void kernel(long long *A)
 int main(){
 	clock_t t1, t2;
     t1 = times_clock();
-    int *d_target;
-	long long A = target;
-    cudaMalloc((void**)&d_target,sizeof(int));
+    long long *d_target, A = target;
+    cudaMalloc((void**)&d_target,sizeof(long long));
 	cudaMemcpy(d_target,&A,sizeof(long long),cudaMemcpyHostToDevice);
 	dim3 block(1024);
 	dim3 grid((A+1023)/1024);
