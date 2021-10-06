@@ -1,7 +1,11 @@
 #include <stdio.h>
 #include <math.h>
 
+<<<<<<< HEAD
 #define target 2*3*5*10000000
+=======
+#define target 2*3*5*1
+>>>>>>> 5f819ded5eb6340c0f43982a1b2c6c356a4d2ee0
 #define SIZE 100
 
 __host__ int GCD(int a, int b)

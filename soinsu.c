@@ -11,7 +11,11 @@ clock_t times_clock()
 }
 
 int main(){
+<<<<<<< HEAD
+    int target = 2*3*5*10;
+=======
     int target = 2*3*5*10000;
+>>>>>>> dbd92fdd04adac3fb2510d5c970a7f11afe94c9f
     int i, j, flag = 0;
     clock_t t1, t2;
     t1 = times_clock();
@@ -28,6 +32,6 @@ int main(){
 	}
     printf("\n");
     t2 = times_clock();
-    printf("%f\n", (double)(t2 - t1) / sysconf(_SC_CLK_TCK));
+    printf("%10.100f\n", (double)(t2 - t1) / sysconf(_SC_CLK_TCK));
     return 0;
 }

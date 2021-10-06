@@ -1,8 +1,13 @@
 #include <stdio.h>
 #include <math.h>
 
+<<<<<<< HEAD
 #define target 2*3*5*100000
 #define SIZE 1000
+=======
+#define target 2*3*5*1
+#define SIZE 100
+>>>>>>> 5f819ded5eb6340c0f43982a1b2c6c356a4d2ee0
 
 __host__ int GCD(int a, int b)
 {
@@ -22,7 +27,7 @@ __global__ void kernel(int *A, int *d_B, int *d_count)
 	int a = i - j;
 	if(i >= __powf(*A,0.5) + 1 && j >= __powf(*A,0.5) + 1 && a > 1 && i < *A && j < *A){
 		if(i^2 % *A == j^2 % *A){
-			if(*d_count < SIZE){
+			if(*d_count > SIZE){
 				d_B[*d_count] = a;
 				*d_count = *d_count + 1;
 			}
