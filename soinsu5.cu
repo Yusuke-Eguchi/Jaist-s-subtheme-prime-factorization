@@ -15,16 +15,15 @@ __host__ int GCD(int a, int b)
 	}
 }
 
-__global__ void kernel(int *A, int *d_B, int *d_count)
+__global__ void kernel(int *A, int *d_B)
 {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	int j = blockIdx.y * blockDim.y + threadIdx.y;
 	int a = i - j;
 	if(i >= __powf(*A,0.5) + 1 && j >= __powf(*A,0.5) + 1 && a > 1 && i < *A && j < *A){
 		if(i^2 % *A == j^2 % *A){
-			if(*d_count < SIZE){
-				d_B[*d_count] = a;
-				*d_count = *d_count + 1;
+			if(sizeof(d_B) / sizeof(int) < SIZE ){
+				d_B[sizeof(d_B) / sizeof(int)] = a;
 			}
 		}
 	}
@@ -34,23 +33,18 @@ int main(){
 	cudaEvent_t start, stop;
 	cudaEventCreate(&start);
 	cudaEventCreate(&stop);
-    int *d_target, A = target, count = 0, *d_count;
+    int *d_target, A = target;
 	int *d_B;
 	int B[SIZE];
 	int i, j, k;
-	for(i=0;i<SIZE;i++){
-		B[i] = 0;
-	}
     cudaMalloc((void**)&d_target,sizeof(int));
 	cudaMalloc((void**)&d_B,sizeof(int)*SIZE);
-	cudaMalloc((void**)&d_count,sizeof(int));
 	cudaMemcpy(d_target,&A,sizeof(int),cudaMemcpyHostToDevice);
 	cudaMemcpy(d_B,&B,sizeof(int)*SIZE,cudaMemcpyHostToDevice);
-	cudaMemcpy(d_count,&count,sizeof(int),cudaMemcpyHostToDevice);
 	dim3 block(32,32);
 	dim3 grid((A+31)/32,(A+31)/32);
 	cudaEventRecord(start);
-	kernel<<<grid,block>>>(d_target,d_B,d_count);
+	kernel<<<grid,block>>>(d_target,d_B);
 	cudaEventRecord(stop);
 	cudaEventSynchronize(stop);
 	float milliseconds = 0;
@@ -58,10 +52,8 @@ int main(){
 	cudaEventDestroy(start);
 	cudaEventDestroy(stop);
 	cudaMemcpy(&B,d_B,sizeof(int)*SIZE,cudaMemcpyDeviceToHost);
-	cudaMemcpy(&count,d_count,sizeof(int),cudaMemcpyDeviceToHost);
 	cudaFree(d_target);
 	cudaFree(d_B);	
-	cudaFree(d_count);
 	for(i=0;i<SIZE;i++){
 		B[i] = GCD(B[i], A);
 	}
