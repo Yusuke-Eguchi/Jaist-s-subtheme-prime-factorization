@@ -10,9 +10,8 @@ clock_t times_clock()
     return times(&t);
 }
 
-
-#define target 2*3*5*10000000
-#define SIZE 100
+#define target 2*3*5*10000
+#define SIZE 1000
 
 __host__ int GCD(int a, int b)
 {
@@ -25,15 +24,16 @@ __host__ int GCD(int a, int b)
 	}
 }
 
-__global__ void kernel(int *A, int *d_B, int *d_count)
+__global__ void kernel(long long *A, int *d_B, int *d_count)
 {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	int j = blockIdx.y * blockDim.y + threadIdx.y;
 	int a = i - j, b;
 	if(i >= __powf(*A,0.5) + 1 && j >= __powf(*A,0.5) + 1 && a > 1 && i < *A && j < *A){
 		if(i^2 % *A == j^2 % *A){
-			if(*d_count < SIZE){
+			if(*d_count > SIZE){
 				b = a;
+				b++;
 			}
 		}
 	}
@@ -42,7 +42,8 @@ __global__ void kernel(int *A, int *d_B, int *d_count)
 int main(){
 	clock_t t1, t2;
     t1 = times_clock();
-    int *d_target, A = target, count = 0, *d_count;
+    int *d_target, count = 0, *d_count;
+	long long  A = target;
 	int *d_B;
 	int B[SIZE];
 	int i, j, k;
@@ -81,7 +82,7 @@ int main(){
 		}
 	}
 	for(i=0;i<SIZE;i++){
-		if(B[i] != 0 && B[i] != 1){
+		if(B[i] > 1){
 			printf("%d ", B[i]);
 		}
 	}

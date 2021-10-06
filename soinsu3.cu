@@ -24,7 +24,7 @@ __host__ int GCD(int a, int b)
 	}
 }
 
-__global__ void kernel(int *A, int *d_B, int *d_count)
+__global__ void kernel(long long *A, int *d_B, int *d_count)
 {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	int j = blockIdx.y * blockDim.y + threadIdx.y;
@@ -42,7 +42,8 @@ __global__ void kernel(int *A, int *d_B, int *d_count)
 int main(){
 	clock_t t1, t2;
     t1 = times_clock();
-    int *d_target, A = target, count = 0, *d_count;
+    int *d_target, count = 0, *d_count;
+	long long  A = target;
 	int *d_B;
 	int B[SIZE];
 	int i, j, k;

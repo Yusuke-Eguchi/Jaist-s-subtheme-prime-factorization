@@ -11,9 +11,9 @@ clock_t times_clock()
 }
 
 
-#define target 2*3*5*1
+#define target 2*3*5*1000000000000
 
-__global__ void kernel(int *A)
+__global__ void kernel(long long *A)
 {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	int j;
@@ -33,9 +33,10 @@ __global__ void kernel(int *A)
 int main(){
 	clock_t t1, t2;
     t1 = times_clock();
-    int *d_target, A = target;
+    int *d_target;
+	long long A = target;
     cudaMalloc((void**)&d_target,sizeof(int));
-	cudaMemcpy(d_target,&A,sizeof(int),cudaMemcpyHostToDevice);
+	cudaMemcpy(d_target,&A,sizeof(long long),cudaMemcpyHostToDevice);
 	dim3 block(1024);
 	dim3 grid((A+1023)/1024);
 	kernel<<<grid,block>>>(d_target);
