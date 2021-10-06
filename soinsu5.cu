@@ -1,7 +1,16 @@
 #include <stdio.h>
 #include <math.h>
+#include <unistd.h>
+#include <sys/time.h>
+#include <sys/times.h>
 
-#define target 2*3*5*100000
+clock_t times_clock()
+{
+    struct tms t;
+    return times(&t);
+}
+
+#define target 2*3*5*1000000000000
 #define SIZE 1000
 
 __host__ int GCD(int a, int b)
@@ -15,42 +24,36 @@ __host__ int GCD(int a, int b)
 	}
 }
 
-__global__ void kernel(int *A, int *d_B)
+__global__ void kernel(long long *A, int *d_B)
 {
 	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	int j = blockIdx.y * blockDim.y + threadIdx.y;
 	int a = i - j;
 	if(i >= __powf(*A,0.5) + 1 && j >= __powf(*A,0.5) + 1 && a > 1 && i < *A && j < *A){
 		if(i^2 % *A == j^2 % *A){
-			if(sizeof(d_B) / sizeof(int) < SIZE ){
-				d_B[sizeof(d_B) / sizeof(int)] = a;
+			if(sizeof(d_B) / sizeof(long long) < SIZE ){
+				d_B[sizeof(d_B) / sizeof(long long)] = a;
 			}
 		}
 	}
 }
 
 int main(){
-	cudaEvent_t start, stop;
-	cudaEventCreate(&start);
-	cudaEventCreate(&stop);
-    int *d_target, A = target;
+	clock_t t1, t2;
+	t1 = times_clock();
+    int *d_target；
+	long long A = target;
 	int *d_B;
 	int B[SIZE];
 	int i, j, k;
-    cudaMalloc((void**)&d_target,sizeof(int));
+    cudaMalloc((void**)&d_target,sizeof(long long));
 	cudaMalloc((void**)&d_B,sizeof(int)*SIZE);
 	cudaMemcpy(d_target,&A,sizeof(int),cudaMemcpyHostToDevice);
 	cudaMemcpy(d_B,&B,sizeof(int)*SIZE,cudaMemcpyHostToDevice);
 	dim3 block(32,32);
 	dim3 grid((A+31)/32,(A+31)/32);
-	cudaEventRecord(start);
 	kernel<<<grid,block>>>(d_target,d_B);
-	cudaEventRecord(stop);
-	cudaEventSynchronize(stop);
 	float milliseconds = 0;
-	cudaEventElapsedTime(&milliseconds, start, stop);
-	cudaEventDestroy(start);
-	cudaEventDestroy(stop);
 	cudaMemcpy(&B,d_B,sizeof(int)*SIZE,cudaMemcpyDeviceToHost);
 	cudaFree(d_target);
 	cudaFree(d_B);	
@@ -77,6 +80,7 @@ int main(){
 		}
 	}
 	printf("\n");
-	printf("%10.10f\n", milliseconds);
+	t2 = times_clock();
+    printf("%10.100f\n", (double)(t2 - t1) / sysconf(_SC_CLK_TCK));
 return 0;
 }

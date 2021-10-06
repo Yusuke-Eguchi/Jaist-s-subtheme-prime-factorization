@@ -11,14 +11,10 @@ clock_t times_clock()
 }
 
 int main(){
-<<<<<<< HEAD
-    int target = 2*3*5*10;
-=======
-    int target = 2*3*5*10000;
->>>>>>> dbd92fdd04adac3fb2510d5c970a7f11afe94c9f
-    int i, j, flag = 0;
     clock_t t1, t2;
     t1 = times_clock();
+    int target = 2*3*5*10;
+    int i, j, flag = 0;
     for(i=2;target>i;i++){
         flag = 0;
 		for(j=2;i>j;j++){

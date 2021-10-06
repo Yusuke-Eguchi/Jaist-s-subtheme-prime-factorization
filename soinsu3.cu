@@ -1,5 +1,14 @@
 #include <stdio.h>
 #include <math.h>
+#include <unistd.h>
+#include <sys/time.h>
+#include <sys/times.h>
+
+clock_t times_clock()
+{
+    struct tms t;
+    return times(&t);
+}
 
 #define target 2*3*5*100000
 #define SIZE 1000
@@ -31,9 +40,8 @@ __global__ void kernel(int *A, int *d_B, int *d_count)
 }
 
 int main(){
-	cudaEvent_t start, stop;
-	cudaEventCreate(&start);
-	cudaEventCreate(&stop);
+	clock_t t1, t2;
+    t1 = times_clock();
     int *d_target, A = target, count = 0, *d_count;
 	int *d_B;
 	int B[SIZE];
@@ -49,14 +57,7 @@ int main(){
 	cudaMemcpy(d_count,&count,sizeof(int),cudaMemcpyHostToDevice);
 	dim3 block(32,32);
 	dim3 grid((A+31)/32,(A+31)/32);
-	cudaEventRecord(start);
 	kernel<<<grid,block>>>(d_target,d_B,d_count);
-	cudaEventRecord(stop);
-	cudaEventSynchronize(stop);
-	float milliseconds = 0;
-	cudaEventElapsedTime(&milliseconds, start, stop);
-	cudaEventDestroy(start);
-	cudaEventDestroy(stop);
 	cudaMemcpy(&B,d_B,sizeof(int)*SIZE,cudaMemcpyDeviceToHost);
 	cudaMemcpy(&count,d_count,sizeof(int),cudaMemcpyDeviceToHost);
 	cudaFree(d_target);
@@ -85,6 +86,7 @@ int main(){
 		}
 	}
 	printf("\n");
-	printf("%10.10f\n", milliseconds);
+    t2 = times_clock();
+    printf("%10.100f\n", (double)(t2 - t1) / sysconf(_SC_CLK_TCK));
 return 0;
 }

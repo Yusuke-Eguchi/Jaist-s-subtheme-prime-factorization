@@ -1,5 +1,15 @@
 #include <stdio.h>
 #include <math.h>
+#include <unistd.h>
+#include <sys/time.h>
+#include <sys/times.h>
+
+clock_t times_clock()
+{
+    struct tms t;
+    return times(&t);
+}
+
 
 #define target 2*3*5*1
 
@@ -21,24 +31,17 @@ __global__ void kernel(int *A)
 }
 
 int main(){
-	cudaEvent_t start, stop;
-	cudaEventCreate(&start);
-	cudaEventCreate(&stop);
+	clock_t t1, t2;
+    t1 = times_clock();
     int *d_target, A = target;
     cudaMalloc((void**)&d_target,sizeof(int));
 	cudaMemcpy(d_target,&A,sizeof(int),cudaMemcpyHostToDevice);
 	dim3 block(1024);
 	dim3 grid((A+1023)/1024);
-	cudaEventRecord(start);
 	kernel<<<grid,block>>>(d_target);
-	cudaEventRecord(stop);
-	cudaEventSynchronize(stop);
-	float milliseconds = 0;
-	cudaEventElapsedTime(&milliseconds, start, stop);
-	cudaEventDestroy(start);
-	cudaEventDestroy(stop);
 	cudaFree(d_target);
 	printf("\n");
-	printf("%10.10f\n", milliseconds);
+    t2 = times_clock();
+    printf("%10.100f\n", (double)(t2 - t1) / sysconf(_SC_CLK_TCK));
 return 0;
 }
