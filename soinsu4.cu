@@ -31,7 +31,7 @@ __global__ void kernel(long long *A, int *d_B, int *d_count)
 	int a = i - j, b;
 	if(i >= __powf(*A,0.5) + 1 && j >= __powf(*A,0.5) + 1 && a > 1 && i < *A && j < *A){
 		if(i^2 % *A == j^2 % *A){
-			if(*d_count > SIZE){
+			if(*d_count < SIZE){
 				b = a;
 				b++;
 			}
