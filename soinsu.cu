@@ -11,12 +11,12 @@ clock_t times_clock()
 }
 
 
-#define target 2*3*5*1000000000000
+#define target 2*3*5*10000
 
 __global__ void kernel(long long *A)
 {
-	int i = blockIdx.x * blockDim.x + threadIdx.x;
-	int j;
+	long long i = blockIdx.x * blockDim.x + threadIdx.x;
+	long long j;
 	int flag = 0;
 	if(i < *A && i > 1){
 		for(j=2;sqrtf(i)>=j;j++){
@@ -25,7 +25,7 @@ __global__ void kernel(long long *A)
 			}
 		}
 		if(*A % i == 0 && flag == 0){
-			printf("%d ", i);
+			printf("%lld ", i);
 		}
 	}
 }

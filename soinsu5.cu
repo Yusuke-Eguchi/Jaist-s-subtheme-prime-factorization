@@ -10,7 +10,7 @@ clock_t times_clock()
     return times(&t);
 }
 
-#define target 2*3*5*10000
+#define target 2*3*5*100000000
 #define SIZE 1000
 
 __host__ int GCD(int a, int b)
@@ -26,8 +26,8 @@ __host__ int GCD(int a, int b)
 
 __global__ void kernel(long long *A, int *d_B)
 {
-	int i = blockIdx.x * blockDim.x + threadIdx.x;
-	int j = blockIdx.y * blockDim.y + threadIdx.y;
+	long long i = blockIdx.x * blockDim.x + threadIdx.x;
+	long long j = blockIdx.y * blockDim.y + threadIdx.y;
 	int a = i - j;
 	if(i >= __powf(*A,0.5) + 1 && j >= __powf(*A,0.5) + 1 && a > 1 && i < *A && j < *A){
 		if(i^2 % *A == j^2 % *A){
