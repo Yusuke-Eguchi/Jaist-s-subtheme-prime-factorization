@@ -64,24 +64,24 @@ int main(){
 	cudaFree(d_target);
 	cudaFree(d_B);	
 	cudaFree(d_count);
-	for(i=0;i<count;i++){
+	for(i=0;i<SIZE;i++){
 		B[i] = GCD(B[i], A);
 	}
-	for(i=0;i<count;i++){
+	for(i=0;i<SIZE;i++){
 		for(k=2;sqrtf(B[i])>=k;k++){
 			if(B[i] % k == 0){
 				B[i] = 0;
 			}
 		}
 	}
-	for(i=0;i<count;i++){
+	for(i=0;i<SIZE;i++){
 		for(j=i+1;j<count;j++){
 			if(B[i] == B[j]){
 				B[j] = 0;
 			}
 		}
 	}
-	for(i=0;i<count;i++){
+	for(i=0;i<SIZE;i++){
 		if(B[i] > 1){
 			printf("%lld ", B[i]);
 		}
