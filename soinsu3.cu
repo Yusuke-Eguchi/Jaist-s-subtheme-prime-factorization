@@ -10,12 +10,12 @@ clock_t times_clock()
     return times(&t);
 }
 
-#define target 2*3*5*10000
+#define target 2*3*5*100000
 #define SIZE 100
 
-__host__ int GCD(int a, int b)
+__host__ int GCD(long long a, long long b)
 {
-	int c;
+	long long c;
 	if(a == 0){
 		return b;
 	} else {
@@ -24,11 +24,11 @@ __host__ int GCD(int a, int b)
 	}
 }
 
-__global__ void kernel(int *A, int *d_B, int *d_count)
+__global__ void kernel(long long *A, long long *d_B, int *d_count)
 {
-	int i = blockIdx.x * blockDim.x + threadIdx.x;
-	int j = blockIdx.y * blockDim.y + threadIdx.y;
-	int a = i - j;
+	long long i = blockIdx.x * blockDim.x + threadIdx.x;
+	long long j = blockIdx.y * blockDim.y + threadIdx.y;
+	long long a = i - j;
 	if(i >= __powf(*A,0.5) && j >= __powf(*A,0.5) && a > 1 && i < *A && j < *A){
 		if(i^2 % *A == j^2 % *A){
 			if(*d_count < SIZE){
@@ -43,23 +43,23 @@ int main(){
 	clock_t t1, t2;
     t1 = times_clock();
     int count = 0, *d_count;
-	int  *d_target, A = target;
-	int *d_B;
-	int B[SIZE];
+	long long  *d_target, A = target;
+	long long *d_B;
+	long long B[SIZE];
 	int i, j, k;
 	for(i=0;i<SIZE;i++){
 		B[i] = 0;
 	}
-    cudaMalloc((void**)&d_target,sizeof(int));
-	cudaMalloc((void**)&d_B,sizeof(int)*SIZE);
+    cudaMalloc((void**)&d_target,sizeof(long long));
+	cudaMalloc((void**)&d_B,sizeof(long long)*SIZE);
 	cudaMalloc((void**)&d_count,sizeof(int));
-	cudaMemcpy(d_target,&A,sizeof(int),cudaMemcpyHostToDevice);
-	cudaMemcpy(d_B,&B,sizeof(int)*SIZE,cudaMemcpyHostToDevice);
+	cudaMemcpy(d_target,&A,sizeof(long long),cudaMemcpyHostToDevice);
+	cudaMemcpy(d_B,&B,sizeof(long long)*SIZE,cudaMemcpyHostToDevice);
 	cudaMemcpy(d_count,&count,sizeof(int),cudaMemcpyHostToDevice);
 	dim3 block(32,32);
 	dim3 grid((A+31)/32,(A+31)/32);
 	kernel<<<grid,block>>>(d_target,d_B,d_count);
-	cudaMemcpy(&B,d_B,sizeof(int)*SIZE,cudaMemcpyDeviceToHost);
+	cudaMemcpy(&B,d_B,sizeof(long long)*SIZE,cudaMemcpyDeviceToHost);
 	cudaMemcpy(&count,d_count,sizeof(int),cudaMemcpyDeviceToHost);
 	cudaFree(d_target);
 	cudaFree(d_B);	
@@ -83,7 +83,7 @@ int main(){
 	}
 	for(i=0;i<count;i++){
 		if(B[i] > 1){
-			printf("%d ", B[i]);
+			printf("%lld ", B[i]);
 		}
 	}
 	printf("\n");
