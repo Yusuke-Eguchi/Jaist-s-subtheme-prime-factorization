@@ -10,7 +10,7 @@ clock_t times_clock()
     return times(&t);
 }
 
-#define target 2*3*5*10000000
+#define target 2*3*5*10000
 #define SIZE 100
 
 __host__ int GCD(int a, int b)
