@@ -10,7 +10,7 @@ clock_t times_clock()
     return times(&t);
 }
 
-#define target 2*3*5*10000
+#define target 2*3*5*100000
 #define SIZE 100
 
 __host__ int GCD(int a, int b)
@@ -33,7 +33,6 @@ __global__ void kernel(long long *A, int *d_B)
 		if(i^2 % *A == j^2 % *A){
 			if(sizeof(d_B) / sizeof(long long) < SIZE ){
 				d_B[sizeof(d_B) / sizeof(long long)] = a;
-				printf("%lld", sizeof(d_B) / sizeof(long long));
 			}
 		}
 	}
@@ -59,6 +58,7 @@ int main(){
 	for(i=0;i<SIZE;i++){
 		B[i] = GCD(B[i], A);
 	}
+	B[0] = -1;
 	for(i=0;i<SIZE;i++){
 		for(k=2;sqrtf(B[i])>=k;k++){
 			if(B[i] % k == 0){
