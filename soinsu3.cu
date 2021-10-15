@@ -13,7 +13,7 @@ clock_t times_clock()
 #define target 2*3*5*10000
 #define SIZE 100
 
-__host__ int GCD(int a, long long b)
+__host__ int GCD(int a, int b)
 {
 	int c;
 	if(a == 0){
