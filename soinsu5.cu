@@ -10,7 +10,7 @@ clock_t times_clock()
     return times(&t);
 }
 
-#define target 2*3*5*100000
+#define target 2*3*5*10000
 #define SIZE 100
 
 __host__ int GCD(int a, int b)
@@ -31,9 +31,7 @@ __global__ void kernel(long long *A, int *d_B)
 	int a = i - j;
 	if(i >= __powf(*A,0.5) + 1 && j >= __powf(*A,0.5) + 1 && a > 1 && i < *A && j < *A){
 		if(i^2 % *A == j^2 % *A){
-			if(sizeof(d_B) / sizeof(long long) < SIZE ){
-				d_B[sizeof(d_B) / sizeof(long long)] = a;
-			}
+			d_B[sizeof(d_B) / sizeof(long long)] = a;
 		}
 	}
 }
