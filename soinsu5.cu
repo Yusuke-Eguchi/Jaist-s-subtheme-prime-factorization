@@ -45,7 +45,7 @@ int main(){
 	int i, j, k;
     cudaMalloc((void**)&d_target,sizeof(int));
 	cudaMalloc((void**)&d_B,sizeof(int)*SIZE);
-	cudaMemcpy(d_target,&A,sizeof(int)),cudaMemcpyHostToDevice);
+	cudaMemcpy(d_target,&A,sizeof(int),cudaMemcpyHostToDevice);
 	cudaMemcpy(d_B,&B,sizeof(int)*SIZE,cudaMemcpyHostToDevice);
 	dim3 block(32,32);
 	dim3 grid((A+31)/32,(A+31)/32);
