@@ -1,22 +1,28 @@
 #include <stdio.h>
 #include <math.h>
-#include <unistd.h>
-#include <sys/time.h>
-#include <sys/times.h>
 
-clock_t times_clock()
-{
-    struct tms t;
-    return times(&t);
+#define target 2*3*5*10000000
+#define SIZE 100
+
+double get_cputime(void)
+{ 
+ struct timespec t;
+ clock_gettime(CLOCK_REALTIME,&t);
+ //clock_gettime(CLOCK_THREAD_CPUTIME_ID,&t);
+ return t.tv_sec + (double)t.tv_nsec*1e-9;
 }
-
-
-#define target 2*3*5*10000
-
-__global__ void kernel(long long *A)
+double get_realtime(void)
 {
-	long long i = blockIdx.x * blockDim.x + threadIdx.x;
-	long long j;
+ struct timespec t;
+ clock_gettime(CLOCK_REALTIME,&t);
+ return t.tv_sec + (double)t.tv_nsec*1e-9;
+}
+double get_tick(void){ return (double)1e-9; }
+
+__global__ void kernel(int *A)
+{
+	int i = blockIdx.x * blockDim.x + threadIdx.x;
+	int j;
 	int flag = 0;
 	if(i < *A && i > 1){
 		for(j=2;sqrtf(i)>=j;j++){
@@ -31,17 +37,17 @@ __global__ void kernel(long long *A)
 }
 
 int main(){
-	clock_t t1, t2;
-    t1 = times_clock();
-    long long *d_target, A = target;
-    cudaMalloc((void**)&d_target,sizeof(long long));
-	cudaMemcpy(d_target,&A,sizeof(long long),cudaMemcpyHostToDevice);
+	double t1, t2;
+	t1 = get_realtime();
+    int *d_target, A = target;
+    cudaMalloc((void**)&d_target,sizeof(int));
+	cudaMemcpy(d_target,&A,sizeof(int),cudaMemcpyHostToDevice);
 	dim3 block(1024);
 	dim3 grid((A+1023)/1024);
 	kernel<<<grid,block>>>(d_target);
 	cudaFree(d_target);
 	printf("\n");
-    t2 = times_clock();
-    printf("%10.100f\n", (double)(t2 - t1) / sysconf(_SC_CLK_TCK));
+	t2 = get_realtime();
+    printf("%10.100f\n", (double)(t2 - t1));
 return 0;
 }

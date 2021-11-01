@@ -1,19 +1,26 @@
 #include <stdio.h>
 #include <math.h>
-#include <unistd.h>
-#include <sys/time.h>
-#include <sys/times.h>
+#include <time.h>
 
-clock_t times_clock()
-{
-    struct tms t;
-    return times(&t);
+double get_cputime(void)
+{ 
+ struct timespec t;
+ clock_gettime(CLOCK_REALTIME,&t);
+ //clock_gettime(CLOCK_THREAD_CPUTIME_ID,&t);
+ return t.tv_sec + (double)t.tv_nsec*1e-9;
 }
+double get_realtime(void)
+{
+ struct timespec t;
+ clock_gettime(CLOCK_REALTIME,&t);
+ return t.tv_sec + (double)t.tv_nsec*1e-9;
+}
+double get_tick(void){ return (double)1e-9; }
 
 int main(){
-    clock_t t1, t2;
-    t1 = times_clock();
-    int target = 2*3*5*10;
+	double t1, t2;
+	t1 = get_realtime();
+    int target = 2*3*5*10000;
     int i, j, flag = 0;
     for(i=2;target>i;i++){
         flag = 0;
@@ -27,7 +34,7 @@ int main(){
 		}
 	}
     printf("\n");
-    t2 = times_clock();
-    printf("%10.100f\n", (double)(t2 - t1) / sysconf(_SC_CLK_TCK));
+	t2 = get_realtime();
+    printf("%10.100f\n", (double)(t2 - t1));
     return 0;
 }

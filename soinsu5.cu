@@ -2,13 +2,23 @@
 #include <math.h>
 #include <time.h>
 
-struct timespec {
-  time_t tv_sec; /* Seconds.  */
-  long tv_nsec;  /* Nanoseconds.  */
-};
-
-#define target 2*3*5*10000
+#define target 2*3*5*10000000
 #define SIZE 100
+
+double get_cputime(void)
+{ 
+ struct timespec t;
+ clock_gettime(CLOCK_REALTIME,&t);
+ //clock_gettime(CLOCK_THREAD_CPUTIME_ID,&t);
+ return t.tv_sec + (double)t.tv_nsec*1e-9;
+}
+double get_realtime(void)
+{
+ struct timespec t;
+ clock_gettime(CLOCK_REALTIME,&t);
+ return t.tv_sec + (double)t.tv_nsec*1e-9;
+}
+double get_tick(void){ return (double)1e-9; }
 
 __host__ int GCD(int a, int b)
 {
@@ -34,9 +44,8 @@ __global__ void kernel(int *A, int *d_B)
 }
 
 int main(){
-	struct timespec tp, start ,stop;
-	clock_getres(CLOCK_REALTIME, struct timespec &tp);
-	clock_gettime(CLOCK_REALTIME, struct timespec &start);
+	double t1, t2;
+	t1 = get_realtime();
     int *d_target, A = target;
 	int *d_B;
 	int B[SIZE];
@@ -75,7 +84,7 @@ int main(){
 		}
 	}
 	printf("\n");
-	clock_gettime(CLOCK_REALTIME, &stop);
-    printf("%10.100f\n", (double)(stop - start));
+	t2 = get_realtime();
+    printf("%10.100f\n", (double)(t2 - t1));
 return 0;
 }
