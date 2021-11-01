@@ -1,14 +1,11 @@
 #include <stdio.h>
 #include <math.h>
-#include <unistd.h>
-#include <sys/time.h>
-#include <sys/times.h>
+#include <time.h>
 
-clock_t times_clock()
-{
-    struct tms t;
-    return times(&t);
-}
+struct timespec {
+  time_t tv_sec; /* Seconds.  */
+  long tv_nsec;  /* Nanoseconds.  */
+};
 
 #define target 2*3*5*10000
 #define SIZE 100
@@ -37,8 +34,9 @@ __global__ void kernel(int *A, int *d_B)
 }
 
 int main(){
-	clock_t t1, t2;
-	t1 = times_clock();
+	struct timespec tp, start ,stop;
+	clock_getres(CLOCK_REALTIME, struct timespec &tp);
+	clock_gettime(CLOCK_REALTIME, struct timespec &start);
     int *d_target, A = target;
 	int *d_B;
 	int B[SIZE];
@@ -77,7 +75,7 @@ int main(){
 		}
 	}
 	printf("\n");
-	t2 = times_clock();
-    printf("%10.100f\n", (double)(t2 - t1) / sysconf(_SC_CLK_TCK));
+	clock_gettime(CLOCK_REALTIME, &stop);
+    printf("%10.100f\n", (double)(stop - start));
 return 0;
 }
